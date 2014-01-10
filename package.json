@@ -4,6 +4,10 @@
   "description": "Create javascript functions with optional, default and named paramaters.",
   "keywords": ["function", "args", "arguments", "paramaters", "api"],
   "homepage": "http://autographer.github.io/args.js/",
+  "repository": {
+	  "type": "git",
+	  "url": "https://github.com/autographer/args.js"
+  },
   "dependencies": {},
   "devDependencies": {
     "mocha": "~1.4.0",
@@ -14,6 +18,6 @@
     "npm": "1.1.x"
   },
   "scripts": {
-    "test": "mocha -r mocha-cakes"
+    "test": "mocha"
   }
 }
