@@ -143,8 +143,23 @@ myFunc({
 });
 		</code></pre>
 
-		<p>
-		<a href="http://autographer.com"><img class=logo src="logo.png" alt="Autographer"></a>
-		</p>
+		<h2>Types</h2>
+		Args.js includes the following type constants for you to use in function signatures:
+		<pre><code class="language-javascript">
+Args.STRING       = 0x1;
+Args.FUNCTION     = 0x1 << 1;
+Args.INT          = 0x1 << 2;
+Args.FLOAT        = 0x1 << 3;
+Args.ARRAY_BUFFER = 0x1 << 4;
+Args.OBJECT       = 0x1 << 5;
+Args.DATE         = 0x1 << 6;
+Args.BOOL         = 0x1 << 7;
+Args.DOM_EL       = 0x1 << 8;
+Args.ARRAY        = 0x1 << 9;
+		</code></pre>
+
+
+		<h2>Credits</h2>
+		By Joe Bain at <a href="http://autographer.com"><img class=logo src="logo.png" alt="Autographer"></a>
 	</div>
 </body>
