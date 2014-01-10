@@ -71,6 +71,9 @@ a.button:hover {
 	margin: 10px 5px;
 	float: right;
 }
+#travis-status {
+	margin:0px 7px;
+}
 @media (max-width: 900px) {
 	.content {
 		margin: 0px 10px;
