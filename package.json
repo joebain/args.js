@@ -1,5 +1,5 @@
 {
-  "name": "args.js",
+  "name": "args",
   "version": "0.7.0",
   "description": "Create javascript functions with optional, default and named paramaters.",
   "keywords": ["function", "args", "arguments", "paramaters", "api"],
