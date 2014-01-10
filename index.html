@@ -24,8 +24,7 @@
 var args = Args([
 	{elements:  Args.ARRAY    | Args.Required},
 	{qualifier: Args.FUNCTION | Args.Optional},
-	{node:      Args.OBJECT   | Args.Optional,
-		_type: MyNode},
+	{node:      Args.DOM_EL   | Args.Optional}
 	{regex:     Args.STRING   | Args.Optional},
 	{index:     Args.INT      | Args.Optional,
 		_default: 0}
