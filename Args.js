@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
 var Args = (function() {
 
 	var _extractSchemeEl = function(rawSchemeEl) {
@@ -145,56 +146,89 @@ var Args = (function() {
 		}
 		return foundOne;
 	};
-	
+
 	var Args = function(scheme, args) {
 		var returns = {};
 		var err = undefined;
 
+		try {
+			args = args || Args.caller.arguments;
+		} catch(e) {};
+		args = args || [];
+
 		var a, s;
-		var notNullIsNull = false;
 
 		for (a = 0, s = 0; a < args.length, s < scheme.length ; s++) {
 			a = (function(a,s) {
-				var arg = args[a];
-				var schemeEl = _extractSchemeEl(scheme[s]);
 
-				// manadatory arg
-				if ((schemeEl.sarg & Args.NotNull) !== 0) {
+				var arg = args[a];
+
+				// argument group
+				if (scheme[s] instanceof Array) {
 					if (arg === null || arg === undefined) {
-						notNullIsNull = true;
-						err = "Argument " + a + " ("+schemeEl.sname+") is null or undefined but it must be not null.";
-						return a;
-					}
-					else if (!_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
-						notNullIsNull = true;
-						if (_isTypeSpecified(schemeEl.sarg)) {
-							err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl.sarg, schemeEl.typeValue)+", but it was type " + (typeof arg) + " with value " + arg + ".";
-						} else {
-							err = "Argument " + a + " ("+schemeEl.sname+") has no valid type specified.";
-						}
+						err = "Argument " + a + " is null or undefined but it must be not null.";
 						return a;
 					} else {
-						returns[schemeEl.sname] = arg;
-						return a+1;
+						var group = scheme[s];
+						var retName = undefined;
+						for (var g = 0 ; g < group.length ; g++) {
+							var schemeEl = _extractSchemeEl(group[g]);
+							if (_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
+								retName = schemeEl.sname;
+							}
+						}
+						if (retName === undefined) {
+							err = "Argument " + a + " should be one of: ";
+							for (var g = 0 ; g < group.length ; g++) {
+								var schemeEl = _extractSchemeEl(group[g]);
+								err += _getTypeString(schemeEl.sarg, schemeEl.typeValue) + ", ";
+							}
+							err += "but it was type " + (typeof arg) + " with value " + arg + ".";
+							return a;
+						} else {
+							returns[retName] = arg;
+							return a+1;
+						}
 					}
-				}
+				} else {
+					var schemeEl = _extractSchemeEl(scheme[s]);
 
-				// optional arg
-				else if ((schemeEl.sarg & Args.Optional) !== 0) {
-					// check if this arg matches the next schema slot
-					if ( arg === null || arg === undefined) {
-						if (schemeEl.defValue !== undefined)  {
-							returns[schemeEl.sname] = schemeEl.defValue;
+					// manadatory arg
+					if ((schemeEl.sarg & Args.NotNull) !== 0) {
+						if (arg === null || arg === undefined) {
+							err = "Argument " + a + " ("+schemeEl.sname+") is null or undefined but it must be not null.";
+							return a;
+						}
+						else if (!_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
+							if (_isTypeSpecified(schemeEl.sarg)) {
+								err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl.sarg, schemeEl.typeValue)+", but it was type " + (typeof arg) + " with value " + arg + ".";
+							} else {
+								err = "Argument " + a + " ("+schemeEl.sname+") has no valid type specified.";
+							}
+							return a;
 						} else {
 							returns[schemeEl.sname] = arg;
+							return a+1;
 						}
-						return a+1; // if the arg is null or undefined it will fill a slot, but may be replace by the default value
-					} else if (_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
-						returns[schemeEl.sname] = arg;
-						return a+1;
-					} else if (schemeEl.defValue !== undefined)  {
-						returns[schemeEl.sname] = schemeEl.defValue;
-						return a;
+					}
+
+					// optional arg
+					else if ((schemeEl.sarg & Args.Optional) !== 0) {
+						// check if this arg matches the next schema slot
+						if ( arg === null || arg === undefined) {
+							if (schemeEl.defValue !== undefined)  {
+								returns[schemeEl.sname] = schemeEl.defValue;
+							} else {
+								returns[schemeEl.sname] = arg;
+							}
+							return a+1; // if the arg is null or undefined it will fill a slot, but may be replace by the default value
+						} else if (_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
+							returns[schemeEl.sname] = arg;
+							return a+1;
+						} else if (schemeEl.defValue !== undefined)  {
+							returns[schemeEl.sname] = schemeEl.defValue;
+							return a;
+						}
 					}
 				}
 
@@ -212,10 +246,8 @@ var Args = (function() {
 			var foundNamedArg = _checkNamedArgs(namedArgs, scheme, returns);
 		}
 		
-		if (err) {
-			if (notNullIsNull && (!namedArgsToCheck || !foundNamedArg)) {
-				throw new Error(err);
-			}
+		if (err && (!namedArgsToCheck || !foundNamedArg)) {
+			throw new Error(err);
 		}
 
 		return returns;

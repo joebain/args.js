@@ -3,7 +3,7 @@ var assert = require("assert")
   ;
 
 
-var Args = require("../main/script/Args.js");
+var Args = require("../Args.js");
 
 describe('Args', function(){
 
