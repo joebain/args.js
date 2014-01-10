@@ -7,6 +7,12 @@
 	<link rel="stylesheet" href="prism.css" />
 </head>
 <body>
+	<div class=side-links>
+		<iframe src="http://ghbtns.com/github-btn.html?user=autographer&repo=args.js&type=fork&count=true"
+			allowtransparency="true" frameborder="0" scrolling="0" width="80" height="20"></iframe>
+		<iframe src="http://ghbtns.com/github-btn.html?user=autographer&repo=args.js&type=watch&count=true"
+			allowtransparency="true" frameborder="0" scrolling="0" width="80" height="20"></iframe>
+	</div>
 	<div class=content>
 		<h1>Args.js</h1>
 		Args.js lets you easily create functions with optional paramaters, default paramaters and named paramaters. It checks types and will trigger exceptions if a function is called incorrectly.
@@ -44,9 +50,28 @@ if ( jQuery.isFunction( qualifier ) ) {
 				<a href="https://github.com/jquery/jquery/blob/master/src/traversing/findFilter.js#L11"><i>Based on actual code in jQuery</i></a>
 			</div>
 		</div>
-		<h2>Code</h2>
-		The code is on <a href="http://github.com/autographer/Args.js">GitHub</a>. It works as a plain include or with AMD or node.js require. There are over 35 tests (so far) which can be run using mocha.
-		<h2>Feature examples</h2>
+		<h2>Example</h2>
+		Clearly and safely specify the arguments your function takes. Have flexibility without writing spaghetti code.
+		<pre><code class="language-javascript">
+function addBook() {
+	var args = Args([
+		{title:       Args.STRING | Args.Required},
+		{description: Args.STRING | Args.Optional},
+		{rating:      Args.INT    | Args.Optional}
+	]);
+
+	args.title === "Frankenstein";
+	args.description === undefined;
+	args.rating === 5;
+}
+
+addBook("Frankenstein", 5);
+		</code></pre>
+		<h2>Download</h2>
+		<a class=button href="https://raw2.github.com/autographer/args.js/master/Args.js">Full</a> (5.8k) <a class=button href="https://raw2.github.com/autographer/args.js/master/Args.min.js">Minified</a> (2.4k)
+		<h2>Source</h2>
+		The code is on <a href="http://github.com/autographer/Args.js">GitHub</a> and is MIT licensed. It works as a plain include or with AMD or node.js require. There are over 35 tests (so far) which can be run using mocha.
+		<h2>Features</h2>
 		<h3>Optional & Required Arguments</h3>
 		Arguments can be specified as optional or required. If a required argument is absent an exception is thrown.
 		<pre><code class="language-javascript">
@@ -117,8 +142,8 @@ myFunc({
 });
 		</code></pre>
 
-		<br/>
-		<br/>
-		From <a href="http://autographer.com">Autographer</a>
+		<p>
+		<a href="http://autographer.com"><img class=logo src="logo.png" alt="Autographer"></a>
+		</p>
 	</div>
 </body>

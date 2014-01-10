@@ -1,3 +1,7 @@
+* {
+	transition-duration: 0.5s;
+	transition-property: background-color;
+}
 body {
 	background-color: #271E17;
 	margin:0;
@@ -8,7 +12,7 @@ body {
 
 a {
 	text-decoration: none;
-	color: #60b8eb;
+	color: #86C7EE;
 }
 a:hover {
 	text-decoration: underline;
@@ -42,6 +46,30 @@ h3 {
 	text-shadow:
 		2px 2px orange,
 		3px 3px black;
+}
+.logo {
+	vertical-align:text-bottom;
+}
+.button {
+	font-family: "Arvo", Courier, monospace;
+	font-weight: bold;
+	font-size: 24px;
+	text-shadow:
+		2px 2px black,
+		3px 3px white;
+	border-bottom: 3px solid black;
+	padding: 5px 20px;
+	margin: 2px 5px;
+	background-color: #604a39;
+}
+a.button:hover {
+	color:orange;
+	text-decoration: none;
+	background-color: #81634c;
+}
+.side-links {
+	margin: 10px 5px;
+	float: right;
 }
 @media (max-width: 900px) {
 	.content {
