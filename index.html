@@ -152,6 +152,25 @@ myFunc({
 	rating: 5
 });
 		</code></pre>
+		<h3>Mixed Order Arguments</h3>
+		Your first and third arguments are optional but the second and fourth aren't? No problem.
+		<pre><code class="language-javascript">
+function addBook() {
+	var args = Args([
+		{author:   Args.OBJECT   | Args.Optional, _type: MyAuthor},
+		{title:    Args.STRING   | Args.Required},
+		{rating:   Args.INT      | Args.Optional},
+		{callback: Args.FUNCTION | Args.Required}
+	], arguments);
+}
+
+// you can now call
+addBook(new MyAuthor("Mary Shelley"), "Frankenstein", 5, function(book) { /* ... */ });
+// or
+addBook("Frankenstein", function(book) { /* ... */ });
+		</code></pre>
+
+
 
 		<h2>Types</h2>
 		Args.js includes the following type constants for you to use in function signatures:
