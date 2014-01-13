@@ -247,6 +247,21 @@ describe('Args', function(){
 			assert.equal(args.test5, testFunctionArg2);
 		});
 
+		it("should parse one string and one function and skip an optional object and an optional int", function() {
+			var testArgs = [testStringArg, testFunctionArg1];
+			var args = Args([
+				{test1: Args.OBJECT   | Args.Optional},
+				{test2: Args.STRING   | Args.Required},
+				{test3: Args.INT      | Args.Optional},
+				{test4: Args.FUNCTION | Args.Required}
+			], testArgs);
+
+			assert.equal(args.test1, undefined);
+			assert.equal(args.test2, testStringArg);
+			assert.equal(args.test3, undefined);
+			assert.equal(args.test4, testFunctionArg1);
+		});
+
 		it("should parse notnull array buffer, optional string, null optional string, null optional string with default value, optional function and null optionl function", function() {
 			var testArgs = [testArrayBufferArg, testStringArg, testFunctionArg1];
 			var args = Args([
