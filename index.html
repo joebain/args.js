@@ -28,7 +28,7 @@ var args = Args([
 	{regex:     Args.STRING   | Args.Optional},
 	{index:     Args.INT      | Args.Optional,
 		_default: 0}
-]);
+], arguments);
 				</code></pre>
 			</div>
 			<div class=col>
@@ -58,7 +58,7 @@ function addBook() {
 		{title:       Args.STRING | Args.Required},
 		{description: Args.STRING | Args.Optional},
 		{rating:      Args.INT    | Args.Optional}
-	]);
+	], arguments);
 
 	args.title === "Frankenstein";
 	args.description === undefined;
@@ -90,7 +90,7 @@ var args = Args([
 	{title:       Args.STRING | Args.Required},
 	{description: Args.STRING | Args.Optional},
 	{rating:      Args.INT    | Args.Optional}
-]);
+], arguments);
 		</code></pre>
 		<h3>Default Arguments</h3>
 		Optional arguments can have default values if no value is passed.
@@ -100,7 +100,7 @@ var args = Args([
 		_default: "Description missing"},
 	{rating:      Args.INT    | Args.Optional,
 		_default: 3}
-]);
+], arguments);
 		</code></pre>
 		<h3>Custom Types</h3>
 		Args.js can work with your custom class hierarchy.
@@ -109,7 +109,7 @@ var args = Args([
 	{title: Args.STRING | Args.Required},
 	{book:  Args.OBJECT | Args.Required,
 		_type: MyBook}
-]);
+], arguments);
 		</code></pre>
 		<h3>Argument Groups</h3>
 		Specify an argument group when one of serveral types can be passed.
@@ -121,7 +121,7 @@ function myFunc() {
 			{description: Args.STRING},
 			{myBook:      Args.OBJECT, _type: MyBook}
 		]
-	]);
+	], arguments);
 }
 
 myFunc("Wuthering Heights", wutherBookObject);
@@ -136,7 +136,7 @@ function myFunc() {
 		{title:       Args.STRING | Args.Required},
 		{description: Args.STRING | Args.Optional},
 		{rating:      Args.INT    | Args.Optional}
-	]);
+	], arguments);
 }
 
 myFunc("Frankenstein", "A book about monsters", 5);
