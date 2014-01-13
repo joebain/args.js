@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 var Args = (function() {
 
+	"use strict";
+
 	var _extractSchemeEl = function(rawSchemeEl) {
 		var schemeEl = {};
 		schemeEl.defValue = undefined;
@@ -148,13 +150,11 @@ var Args = (function() {
 	};
 
 	var Args = function(scheme, args) {
+		if (scheme === undefined) throw new Error("The scheme has not been passed.");
+		if (args === undefined) throw new Error("The arguments have not been passed.");
+
 		var returns = {};
 		var err = undefined;
-
-		try {
-			args = args || Args.caller.arguments;
-		} catch(e) {};
-		args = args || [];
 
 		var a, s;
 
