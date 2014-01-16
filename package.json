@@ -19,5 +19,6 @@
   },
   "scripts": {
     "test": "mocha"
-  }
+  },
+  "main":"Args.js"
 }
