@@ -1,7 +1,7 @@
 {
   "name": "args.js",
   "version": "0.8.0",
-  "homepage": "https://github.com/autographer/args.js",
+  "homepage": "http://autographer.github.io/args.js",
   "description": "Create javascript functions with optional, default and named paramaters.",
   "main": "Args.js",
   "keywords": [
