@@ -53,6 +53,35 @@ describe('Args', function(){
 			], [testBool]);
 			assert.equal(args.test1, testBool);
 		});
+		it("should parse out any value", function() {
+			// String
+			var args = Args([ {test1: Args.ANY | Args.Optional} ], [testStringArg]);
+			assert.equal(args.test1, testStringArg);
+
+			// Int
+			args = Args([ {test1: Args.ANY | Args.Optional} ], [testIntArg]);
+			assert.equal(args.test1, testIntArg);
+
+			// Float
+			args = Args([ {test1: Args.ANY | Args.Optional} ], [testFloatArg]);
+			assert.equal(args.test1, testFloatArg);
+
+			// Object
+			args = Args([ {test1: Args.ANY | Args.Optional} ], [testObjArg]);
+			assert.equal(args.test1, testObjArg);
+
+			// Object of specified type
+			args = Args([ {test1: Args.ANY | Args.Optional} ], [testPhotoArg]);
+			assert.equal(args.test1, testPhotoArg);
+
+			// Date
+			args = Args([ {test1: Args.ANY | Args.Optional} ], [testDate]);
+			assert.equal(args.test1, testDate);
+
+			// Bool
+			args = Args([ {test1: Args.ANY | Args.Optional} ], [testBool]);
+			assert.equal(args.test1, testBool);
+		});
 	});
 
 	describe("Not null and optional args", function() {
