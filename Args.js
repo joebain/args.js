@@ -45,6 +45,9 @@ var Args = (function() {
 	};
 
 	var _typeMatches = function(arg, sarg, typeValue) {
+		if ((sarg & Args.ANY) !== 0) {
+			return true;
+		}
 		if ((sarg & Args.STRING) !== 0 && typeof arg === "string") {
 			return true;
 		}
@@ -87,7 +90,7 @@ var Args = (function() {
 	};
 
 	var _isTypeSpecified = function(sarg) {
-		return (sarg & (Args.STRING | Args.FUNCTION | Args.INT | Args.FLOAT | Args.OBJECT | Args.ARRAY_BUFFER | Args.DATE | Args.BOOL | Args.DOM_EL | Args.ARRAY)) != 0;
+		return (sarg & (Args.ANY | Args.STRING | Args.FUNCTION | Args.INT | Args.FLOAT | Args.OBJECT | Args.ARRAY_BUFFER | Args.DATE | Args.BOOL | Args.DOM_EL | Args.ARRAY)) != 0;
 	};
 
 	var _getTypeString = function(sarg, typeValue) {
@@ -253,21 +256,22 @@ var Args = (function() {
 		return returns;
 	};
 
-	Args.STRING       = 0x1;
-	Args.FUNCTION     = 0x1 << 1;
-	Args.INT          = 0x1 << 2;
-	Args.FLOAT        = 0x1 << 3;
-	Args.ARRAY_BUFFER = 0x1 << 4;
-	Args.OBJECT       = 0x1 << 5;
-	Args.DATE         = 0x1 << 6;
-	Args.BOOL         = 0x1 << 7;
-	Args.DOM_EL       = 0x1 << 8;
-	Args.ARRAY        = 0x1 << 9;
+	Args.ANY	  = 0x1;
+	Args.STRING	  = 0x1 << 1;
+	Args.FUNCTION	  = 0x1 << 2;
+	Args.INT	  = 0x1 << 3;
+	Args.FLOAT	  = 0x1 << 4;
+	Args.ARRAY_BUFFER = 0x1 << 5;
+	Args.OBJECT	  = 0x1 << 6;
+	Args.DATE	  = 0x1 << 7;
+	Args.BOOL	  = 0x1 << 8;
+	Args.DOM_EL	  = 0x1 << 9;
+	Args.ARRAY	  = 0x1 << 10;
 
 
-	Args.Optional     = 0x1 << 10;
-	Args.NotNull      =
-	Args.Required     = 0x1 << 11;
+	Args.Optional	  = 0x1 << 11;
+	Args.NotNull	  =
+	Args.Required	  = 0x1 << 12;
 
 	return Args;
 })();
