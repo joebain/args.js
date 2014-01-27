@@ -230,6 +230,18 @@ describe('Args', function(){
 			assert.equal(args.test2, testIntArg2);
 			assert.equal(args.test3, testStringArg);
 		});
+
+		it("should parse two strings and an int", function() {
+			var args = Args([
+				{test1: Args.STRING | Args.Required},
+				{test2: Args.STRING | Args.Optional},
+				{test3: Args.INT    | Args.Optional}
+			], [{test1: testStringArg, test2: testStringArg2, test3: testIntArg}]);
+
+			assert.equal(args.test1, testStringArg);
+			assert.equal(args.test2, testStringArg2);
+			assert.equal(args.test3, testIntArg);
+		});
 	});
 
 	describe("Default values", function() {
