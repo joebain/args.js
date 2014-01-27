@@ -30,12 +30,15 @@ var Args = (function() {
 		var schemeEl = {};
 		schemeEl.defValue = undefined;
 		schemeEl.typeValue = undefined;
+		schemeEl.customCheck = undefined;
 		for (var name in rawSchemeEl) {
 			if (!rawSchemeEl.hasOwnProperty(name)) continue;
 				if (name === "_default") {
 					schemeEl.defValue = rawSchemeEl[name];
 				} else if (name === "_type") {
 					schemeEl.typeValue = rawSchemeEl[name];
+				} else if (name === "_check") {
+					schemeEl.customCheck = rawSchemeEl[name];
 				} else {
 					schemeEl.sname = name;
 				}
@@ -44,41 +47,41 @@ var Args = (function() {
 		return schemeEl;
 	};
 
-	var _typeMatches = function(arg, sarg, typeValue) {
-		if ((sarg & Args.ANY) !== 0) {
+	var _typeMatches = function(arg, schemeEl) {
+		if ((schemeEl.sarg & Args.ANY) !== 0) {
 			return true;
 		}
-		if ((sarg & Args.STRING) !== 0 && typeof arg === "string") {
+		if ((schemeEl.sarg & Args.STRING) !== 0 && typeof arg === "string") {
 			return true;
 		}
-		if ((sarg & Args.FUNCTION) !== 0 && typeof arg === "function") {
+		if ((schemeEl.sarg & Args.FUNCTION) !== 0 && typeof arg === "function") {
 			return true;
 		}
-		if ((sarg & Args.INT) !== 0 && (typeof arg === "number" && Math.floor(arg) === arg)) {
+		if ((schemeEl.sarg & Args.INT) !== 0 && (typeof arg === "number" && Math.floor(arg) === arg)) {
 			return true;
 		}
-		if ((sarg & Args.FLOAT) !== 0 && typeof arg === "number") {
+		if ((schemeEl.sarg & Args.FLOAT) !== 0 && typeof arg === "number") {
 			return true;
 		}
-		if ((sarg & Args.ARRAY) !== 0 && (arg instanceof Array)) {
+		if ((schemeEl.sarg & Args.ARRAY) !== 0 && (arg instanceof Array)) {
 			return true;
 		}
-		if ((sarg & Args.OBJECT) !== 0 && (
+		if (((schemeEl.sarg & Args.OBJECT) !== 0 || schemeEl.typeValue !== undefined) && (
 			typeof arg === "object" &&
-			(typeValue === undefined || (arg instanceof typeValue))
+			(schemeEl.typeValue === undefined || (arg instanceof schemeEl.typeValue))
 		)) {
 			return true;
 		}
-		if ((sarg & Args.ARRAY_BUFFER) !== 0 && arg.toString().match(/ArrayBuffer/)) {
+		if ((schemeEl.sarg & Args.ARRAY_BUFFER) !== 0 && arg.toString().match(/ArrayBuffer/)) {
 			return true;
 		}
-		if ((sarg & Args.DATE) !== 0 && arg instanceof Date) {
+		if ((schemeEl.sarg & Args.DATE) !== 0 && arg instanceof Date) {
 			return true;
 		}
-		if ((sarg & Args.BOOL) !== 0 && typeof arg === "boolean") {
+		if ((schemeEl.sarg & Args.BOOL) !== 0 && typeof arg === "boolean") {
 			return true;
 		}
-		if ((sarg & Args.DOM_EL) !== 0 &&
+		if ((schemeEl.sarg & Args.DOM_EL) !== 0 &&
 			(
 				(arg instanceof HTMLElement) ||
 				(window.$ !== undefined && arg instanceof window.$)
@@ -86,14 +89,23 @@ var Args = (function() {
 		) {
 			return true;
 		}
+		if (schemeEl.customCheck !== undefined && typeof schemeEl.customCheck === "function") {
+			if (schemeEl.customCheck(arg)) {
+				return true;
+			}
+		}
 		return false;
 	};
 
-	var _isTypeSpecified = function(sarg) {
-		return (sarg & (Args.ANY | Args.STRING | Args.FUNCTION | Args.INT | Args.FLOAT | Args.OBJECT | Args.ARRAY_BUFFER | Args.DATE | Args.BOOL | Args.DOM_EL | Args.ARRAY)) != 0;
+	var _isTypeSpecified = function(schemeEl) {
+		return (schemeEl.sarg & (Args.ANY | Args.STRING | Args.FUNCTION | Args.INT | Args.FLOAT | Args.OBJECT | Args.ARRAY_BUFFER | Args.DATE | Args.BOOL | Args.DOM_EL | Args.ARRAY)) != 0 || schemeEl.typeValue !== undefined;
 	};
 
-	var _getTypeString = function(sarg, typeValue) {
+	var _getTypeString = function(schemeEl) {
+		var sarg = schemeEl.sarg;
+		var typeValue = schemeEl.typeValue;
+		var customCheck = schemeEl.customCheck;
+
 		if ((sarg & Args.STRING) !== 0 ) {
 			return "String";
 		}
@@ -128,6 +140,9 @@ var Args = (function() {
 		if ((sarg & Args.DOM_EL) !== 0 ) {
 			return "DOM Element";
 		}
+		if (customCheck !== undefined) {
+			return "[Custom checker]";
+		}
 		return "unknown";
 	};
 
@@ -139,7 +154,7 @@ var Args = (function() {
 				for (var name in namedArgs) {
 					var namedArg = namedArgs[name];
 					if (name === schemeEl.sname) {
-						if (_typeMatches(namedArg, schemeEl.sarg, schemeEl.type)) {
+						if (_typeMatches(namedArg, schemeEl)) {
 							returns[name] = namedArg;
 							argFound = true;
 							break;
@@ -176,7 +191,7 @@ var Args = (function() {
 						var retName = undefined;
 						for (var g = 0 ; g < group.length ; g++) {
 							var schemeEl = _extractSchemeEl(group[g]);
-							if (_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
+							if (_typeMatches(arg, schemeEl)) {
 								retName = schemeEl.sname;
 							}
 						}
@@ -184,7 +199,7 @@ var Args = (function() {
 							err = "Argument " + a + " should be one of: ";
 							for (var g = 0 ; g < group.length ; g++) {
 								var schemeEl = _extractSchemeEl(group[g]);
-								err += _getTypeString(schemeEl.sarg, schemeEl.typeValue) + ", ";
+								err += _getTypeString(schemeEl) + ", ";
 							}
 							err += "but it was type " + (typeof arg) + " with value " + arg + ".";
 							return a;
@@ -196,15 +211,40 @@ var Args = (function() {
 				} else {
 					var schemeEl = _extractSchemeEl(scheme[s]);
 
+					// optional arg
+					if ((schemeEl.sarg & Args.Optional) !== 0) {
+						// check if this arg matches the next schema slot
+						if ( arg === null || arg === undefined) {
+							if (schemeEl.defValue !== undefined)  {
+								returns[schemeEl.sname] = schemeEl.defValue;
+							} else {
+								returns[schemeEl.sname] = arg;
+							}
+							return a+1; // if the arg is null or undefined it will fill a slot, but may be replace by the default value
+						} else if (_typeMatches(arg, schemeEl)) {
+							returns[schemeEl.sname] = arg;
+							return a+1;
+						} else if (schemeEl.defValue !== undefined)  {
+							returns[schemeEl.sname] = schemeEl.defValue;
+							return a;
+						}
+					}
+
 					// manadatory arg
-					if ((schemeEl.sarg & Args.NotNull) !== 0) {
+					else { //if ((schemeEl.sarg & Args.NotNull) !== 0) {
 						if (arg === null || arg === undefined) {
 							err = "Argument " + a + " ("+schemeEl.sname+") is null or undefined but it must be not null.";
 							return a;
 						}
-						else if (!_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
-							if (_isTypeSpecified(schemeEl.sarg)) {
-								err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl.sarg, schemeEl.typeValue)+", but it was type " + (typeof arg) + " with value " + arg + ".";
+						else if (!_typeMatches(arg, schemeEl)) {
+							if (_isTypeSpecified(schemeEl)) {
+								err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl)+", but it was type " + (typeof arg) + " with value " + arg + ".";
+							} else if (schemeEl.customCheck !== undefined) {
+								var funcString = schemeEl.customCheck.toString();
+								if (funcString.length > 50) {
+									funcString = funcString.substr(0, 40) + "..." + funcString.substr(funcString.length-10);
+								}
+								err = "Argument " + a + " ("+schemeEl.sname+") does not pass the custom check ("+funcString+").";
 							} else {
 								err = "Argument " + a + " ("+schemeEl.sname+") has no valid type specified.";
 							}
@@ -215,24 +255,6 @@ var Args = (function() {
 						}
 					}
 
-					// optional arg
-					else if ((schemeEl.sarg & Args.Optional) !== 0) {
-						// check if this arg matches the next schema slot
-						if ( arg === null || arg === undefined) {
-							if (schemeEl.defValue !== undefined)  {
-								returns[schemeEl.sname] = schemeEl.defValue;
-							} else {
-								returns[schemeEl.sname] = arg;
-							}
-							return a+1; // if the arg is null or undefined it will fill a slot, but may be replace by the default value
-						} else if (_typeMatches(arg, schemeEl.sarg, schemeEl.typeValue)) {
-							returns[schemeEl.sname] = arg;
-							return a+1;
-						} else if (schemeEl.defValue !== undefined)  {
-							returns[schemeEl.sname] = schemeEl.defValue;
-							return a;
-						}
-					}
 				}
 
 				return a;

@@ -84,6 +84,48 @@ describe('Args', function(){
 		});
 	});
 
+	describe("Shortcuts", function() {
+		var Photo = function(){};
+		var testPhotoArg = new Photo;
+		var testNullArg = undefined;
+		var testIntArg = 42;
+		var testStringArg = "hullo!";
+
+		it('should not need a type specifier if a custom type is provided', function(){
+			var args = Args([
+				{test1:Args.NotNull, _type:Photo}
+			], [testPhotoArg]);
+			assert.equal(args.test1, testPhotoArg);
+		});
+		it('should throw an error when a custom type is provided without a type specifier and the argument is null', function(){
+			(function() {
+			var args = Args([
+				{test1:Args.NotNull, _type:Photo}
+			], [testNullArg]);
+			assert.equal(args.test1, testPhotoArg);
+			}).should.throw(/is null or undefined/);
+		});
+
+		it('should treat an argument as notnull by default', function(){
+			var args = Args([
+				{test1:Args.INT},
+				{test2:Args.STRING}
+			], [testIntArg, testStringArg]);
+
+			assert.equal(args.test1, testIntArg);
+			assert.equal(args.test2, testStringArg);
+		});
+
+		it("should throw an error when a defaulted notnull arg is null", function() {
+			(function() {
+				Args([
+					{test1: Args.STRING}
+				], [testNullArg]);
+			}).should.throw(/is null or undefined/);
+		});
+
+	});
+
 	describe("Not null and optional args", function() {
 		var testStringArg = "testArg";
 		var testIntArg = 62;
@@ -351,6 +393,25 @@ describe('Args', function(){
 			assert.equal(args.test5, true);
 		});
 		
+	});
+
+	describe("Custom check functions", function() {
+		var testIntArg = 42;
+		it("should match an int based on a custom value check", function() {
+			var args = Args([
+				 {test1: Args.NotNull, _check: function(v) { return v === 42; } }
+			], [testIntArg]);
+
+			assert.equal(args.test1, testIntArg);
+		});
+
+		it("should error if a value doesn't match a custom value check", function() {
+			(function() {
+				var args = Args([
+					{test1: Args.NotNull, _check: function(v) { return v === 43; } }
+				], [testIntArg]);
+			}).should.throw(/does not pass the custom check/);
+		});
 	});
 
 	describe("Errors", function() {
