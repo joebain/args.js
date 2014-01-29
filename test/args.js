@@ -168,6 +168,15 @@ describe('Args', function(){
 			assert.equal(args.test2, undefined);
 			assert.equal(args.test3, testBool);
 		});
+
+		it("should skip an earlier optional arg if it is possible to fill a later required arg", function() {
+			var a = new Args([
+				 { test1: Args.STRING | Args.Optional },
+				 { test2: Args.STRING | Args.Required }
+			], [testString]);
+			assert.equal(args.test1, undefined);
+			assert.equal(args.test2, testString);
+		});
 	});
 
 	describe("Multiple types for one argument", function() {
@@ -200,6 +209,7 @@ describe('Args', function(){
 		var testIntArg = 62;
 		var testIntArg2 = 82;
 		var testFloatArg = 47.9;
+		var testObjectArg = {a:1, b:2};
 
 		it("should parse a named string", function() {
 			var args = Args([
@@ -231,7 +241,7 @@ describe('Args', function(){
 			assert.equal(args.test3, testStringArg);
 		});
 
-		it.skip("should parse two strings and an int", function() {
+		it("should parse two strings and an int", function() {
 			var args = Args([
 				{test1: Args.STRING | Args.Required},
 				{test2: Args.STRING | Args.Optional},
@@ -241,6 +251,22 @@ describe('Args', function(){
 			assert.equal(args.test1, testStringArg);
 			assert.equal(args.test2, testStringArg2);
 			assert.equal(args.test3, testIntArg);
+		});
+
+		it("should parse a named object out of an object", function() {
+			var args = Args([
+				{test1: Args.OBJECT | Args.Required}
+			], [{test1: testObjectArg}]);
+			assert.equal(args.test1, testObjectArg);
+		});
+
+		it("should parse a named object out of an object when it is required and a previous object is optional", function() {
+			var args = Args([
+				{test1: Args.OBJECT | Args.Optional},
+				{test2: Args.OBJECT | Args.Required}
+			], [{test2: testObjectArg}]);
+			assert.equal(args.test1, undefined);
+			assert.equal(args.test2, testObjectArg);
 		});
 	});
 
