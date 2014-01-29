@@ -128,6 +128,7 @@ describe('Args', function(){
 
 	describe("Not null and optional args", function() {
 		var testStringArg = "testArg";
+		var testStringArg2 = "testArg2";
 		var testIntArg = 62;
 		var testFloatArg = 47.9;
 		var testDate = new Date();
@@ -173,9 +174,20 @@ describe('Args', function(){
 			var a = new Args([
 				 { test1: Args.STRING | Args.Optional },
 				 { test2: Args.STRING | Args.Required }
-			], [testString]);
+			], [testStringArg]);
 			assert.equal(args.test1, undefined);
-			assert.equal(args.test2, testString);
+			assert.equal(args.test2, testStringArg);
+		});
+
+		it("should skip an earlier optional arg and fill 2 later required args", function() {
+			var a = new Args([
+				 { test1: Args.STRING | Args.Optional },
+				 { test2: Args.STRING | Args.Required },
+				 { test3: Args.STRING | Args.Required }
+			], [testStringArg, testStringArg2]);
+			assert.equal(args.test1, undefined);
+			assert.equal(args.test2, testStringArg);
+			assert.equal(args.test2, testStringArg2);
 		});
 	});
 
@@ -206,6 +218,7 @@ describe('Args', function(){
 
 	describe("Basic named args", function() {
 		var testStringArg = "testArg";
+		var testStringArg2 = "testArg2";
 		var testIntArg = 62;
 		var testIntArg2 = 82;
 		var testFloatArg = 47.9;
