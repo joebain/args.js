@@ -149,7 +149,7 @@ var Args = (function() {
 	var _checkNamedArgs = function(namedArgs, scheme, returns) {
 		var foundOne = false;
 		for (var s = 0  ; s < scheme.length ; s++) {
-			foundOne &= (function(schemeEl) {
+			var found = (function(schemeEl) {
 				var argFound = false;
 				for (var name in namedArgs) {
 					var namedArg = namedArgs[name];
@@ -163,10 +163,45 @@ var Args = (function() {
 				}
 				return argFound;
 			})(_extractSchemeEl(scheme[s]));
+			if (found) { scheme.splice(s--, 1); }
+			foundOne |= found;
 		}
 		return foundOne;
 	};
 
+	var _schemesMatch = function(schemeA, schemeB) {
+		if (!schemeA || !schemeB) { return false; }
+		return (schemeA.sarg & ~(Args.Optional | Args.Required)) === (schemeB.sarg & ~(Args.Optional | Args.Required)) &&
+			   schemeA.typeValue === schemeB.typeValue && schemeA.customCheck === schemeB.customCheck;
+	};
+
+	var _isRequired = function(sarg) {
+		return !_isOptional(sarg);
+	};
+
+	var _isOptional = function(sarg) {
+		return (sarg & Args.Optional) !== 0;
+	};
+
+	/**
+	 * Last argument may be a named argument object. This is decided in a non-greedy way, if
+	 * there are any unmatched arguments after the normal process and the last argument is an
+	 * object it is inspected for matching names.
+	 *
+	 * If the last argument is a named argument object and it could potentially be matched to
+	 * a normal object in the schema the object is first used to try to match any remaining
+	 * required args (including the object that it would match against). Only if there are no
+	 * remaining required args or none of the remaining required args are matched will the
+	 * last object arg match against a normal schema object.
+	 *
+	 * Runs of objects with the same type are matched greedily but if a required object is
+	 * encountered in the schema after all objects of that type have been matched the previous
+	 * matches are shifted right to cover the new required arg. Shifts can only happen from
+	 * immediately preceding required args or optional args. If a previous required arg is
+	 * matched but an optional arg seprates the new required arg from the old one only the
+	 * optional arg in between can be shifted. The required arg and any preceding optional
+	 * args are not shifted.
+	 */
 	var Args = function(scheme, args) {
 		if (scheme === undefined) throw new Error("The scheme has not been passed.");
 		if (args === undefined) throw new Error("The arguments have not been passed.");
@@ -174,7 +209,43 @@ var Args = (function() {
 		var returns = {};
 		var err = undefined;
 
+		var runType = undefined;
+		var run = [];
+		var _addToRun = function(schemeEl) {
+			if (
+				!runType ||
+				!_schemesMatch(runType, schemeEl) ||
+				(_isRequired(runType.sarg) && _isOptional(schemeEl.sarg))
+			) {
+				run = [];
+			}
+			if (run.length > 0 || _isOptional(schemeEl.sarg)) {
+				runType = schemeEl;
+				run.push(schemeEl);
+			}
+		};
+		var _shiftRun = function(schemeEl, r) {
+			if (r === undefined) r = run.length-1;
+			if (r < 0) return;
+			var lastMatch = run[r];
+			returns[schemeEl.sname] = returns[lastMatch.sname];
+			returns[lastMatch.sname] = undefined;
+			if ((lastMatch.sarg & Args.Optional) === 0) { // if the last in the run was not optional
+				_shiftRun(lastMatch, r-1);
+			}
+		};
+
+
 		var a, s;
+
+
+		// first let's extract any named args
+		if (typeof args[args.length-1] === "object") {
+			if (_checkNamedArgs(args[args.length-1], scheme, returns)) {
+				args.splice(args.length-1,1);
+			}
+		}
+		
 
 		for (a = 0, s = 0; a < args.length, s < scheme.length ; s++) {
 			a = (function(a,s) {
@@ -223,6 +294,7 @@ var Args = (function() {
 							return a+1; // if the arg is null or undefined it will fill a slot, but may be replace by the default value
 						} else if (_typeMatches(arg, schemeEl)) {
 							returns[schemeEl.sname] = arg;
+							_addToRun(schemeEl);
 							return a+1;
 						} else if (schemeEl.defValue !== undefined)  {
 							returns[schemeEl.sname] = schemeEl.defValue;
@@ -233,12 +305,24 @@ var Args = (function() {
 					// manadatory arg
 					else { //if ((schemeEl.sarg & Args.NotNull) !== 0) {
 						if (arg === null || arg === undefined) {
-							err = "Argument " + a + " ("+schemeEl.sname+") is null or undefined but it must be not null.";
-							return a;
+							if (_isTypeSpecified(schemeEl) && _schemesMatch(schemeEl, runType)) {
+								_shiftRun(schemeEl);
+								_addToRun(schemeEl);
+								return a;
+							} else {
+								err = "Argument " + a + " ("+schemeEl.sname+") is null or undefined but it must be not null.";
+								return a;
+							}
 						}
 						else if (!_typeMatches(arg, schemeEl)) {
 							if (_isTypeSpecified(schemeEl)) {
-								err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl)+", but it was type " + (typeof arg) + " with value " + arg + ".";
+								if (_schemesMatch(schemeEl, runType)) {
+									_shiftRun(schemeEl);
+									_addToRun(schemeEl);
+									return a+1;
+								} else {
+									err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl)+", but it was type " + (typeof arg) + " with value " + arg + ".";
+								}
 							} else if (schemeEl.customCheck !== undefined) {
 								var funcString = schemeEl.customCheck.toString();
 								if (funcString.length > 50) {
@@ -251,6 +335,7 @@ var Args = (function() {
 							return a;
 						} else {
 							returns[schemeEl.sname] = arg;
+							_addToRun(schemeEl);
 							return a+1;
 						}
 					}
@@ -264,14 +349,7 @@ var Args = (function() {
 			}
 		}
 
-		// check named args for optional args, named args are last
-		var namedArgsToCheck = (a < args.length && (typeof args[a]) === "object");
-		if (namedArgsToCheck) {
-			var namedArgs = args[a];
-			var foundNamedArg = _checkNamedArgs(namedArgs, scheme, returns);
-		}
-		
-		if (err && (!namedArgsToCheck || !foundNamedArg)) {
+		if (err) {
 			throw new Error(err);
 		}
 
