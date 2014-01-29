@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>args.js tests</title>
+  <link rel="stylesheet" media="all" href="vendor/mocha.css">
+</head>
+<body>
+  <div id="mocha"><p><a href=".">Index</a></p></div>
+  <div id="messages"></div>
+  <div id="fixtures"></div>
+  <script src="vendor/mocha.js"></script>
+  <script src="vendor/chai.js"></script>
+
+  <script src="vendor/jquery.js"></script>
+  <script src="vendor/underscore.js"></script>
+  <script src="vendor/backbone.js"></script>
+
+  <script src="../args.js"></script>
+
+  <script>mocha.setup('bdd')</script>
+  <script src="args.js"></script>
+  <script>
+	  if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+      else { mocha.run(); }
+  </script>
+</body>
+</html>

@@ -1,9 +1,14 @@
-var assert = require("assert")
-  , should = require("should")
-  ;
+if (typeof window === 'undefined') {
+	var assert = require("assert")
+	, should = require("should")
+	;
 
 
-var Args = require("../Args.js");
+	var Args = require("../Args.js");
+} else if (window.chai) {
+	var assert = chai.assert;
+	var should = chai.should();
+}
 
 describe('Args', function(){
 
@@ -171,7 +176,7 @@ describe('Args', function(){
 		});
 
 		it("should skip an earlier optional arg if it is possible to fill a later required arg", function() {
-			var a = new Args([
+			var args = new Args([
 				 { test1: Args.STRING | Args.Optional },
 				 { test2: Args.STRING | Args.Required }
 			], [testStringArg]);
@@ -180,14 +185,24 @@ describe('Args', function(){
 		});
 
 		it("should skip an earlier optional arg and fill 2 later required args", function() {
-			var a = new Args([
+			var args = new Args([
 				 { test1: Args.STRING | Args.Optional },
 				 { test2: Args.STRING | Args.Required },
 				 { test3: Args.STRING | Args.Required }
 			], [testStringArg, testStringArg2]);
 			assert.equal(args.test1, undefined);
 			assert.equal(args.test2, testStringArg);
-			assert.equal(args.test2, testStringArg2);
+			assert.equal(args.test3, testStringArg2);
+		});
+
+		it("should throw an error when there are not enough arguments for a run of the same type", function() {
+			(function() {
+				var args = new Args([
+					{ test1: Args.STRING | Args.Required },
+					{ test2: Args.STRING | Args.Required },
+					{ test3: Args.STRING | Args.Required }
+				], [testStringArg, testStringArg2]);
+			}).should.throw(/is null or undefined/);
 		});
 	});
 
@@ -280,6 +295,15 @@ describe('Args', function(){
 			], [{test2: testObjectArg}]);
 			assert.equal(args.test1, undefined);
 			assert.equal(args.test2, testObjectArg);
+		});
+
+		it("should parse a named object out of an object and leave other objects for non-named args", function() {
+			var args = Args([
+				{test1: Args.STRING | Args.Optional},
+				{test2: Args.STRING | Args.Optional}
+			], [testStringArg, {test1: testStringArg2}]);
+			assert.equal(args.test1, testStringArg2);
+			assert.equal(args.test2, testStringArg);
 		});
 	});
 
