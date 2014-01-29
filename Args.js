@@ -247,7 +247,7 @@ var Args = (function() {
 		}
 		
 
-		for (a = 0, s = 0; a < args.length, s < scheme.length ; s++) {
+		for (a = 0, s = 0; s < scheme.length ; s++) {
 			a = (function(a,s) {
 
 				var arg = args[a];
