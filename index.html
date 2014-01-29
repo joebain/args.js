@@ -9,11 +9,11 @@
 <body>
 	<div class=content>
 		<div class=side-links>
-			<a href="https://travis-ci.org/autographer/args.js" id=travis-status><img alt="Travis CI" src="https://travis-ci.org/autographer/args.js.png"></a>
+			<a href="https://travis-ci.org/autographer/args.js" id=travis-status><img alt="Travis CI" src="https://travis-ci.org/autographer/args.js.png?branch=master"></a>
 			<iframe src="http://ghbtns.com/github-btn.html?user=autographer&repo=args.js&type=fork&count=true"
-				allowtransparency="true" frameborder="0" scrolling="0" width="80" height="20"></iframe>
+				allowtransparency="true" frameborder="0" scrolling="0" width="90" height="20"></iframe>
 			<iframe src="http://ghbtns.com/github-btn.html?user=autographer&repo=args.js&type=watch&count=true"
-				allowtransparency="true" frameborder="0" scrolling="0" width="80" height="20"></iframe>
+				allowtransparency="true" frameborder="0" scrolling="0" width="90" height="20"></iframe>
 		</div>
 		<h1>Args.js</h1>
 		Args.js lets you easily create functions with optional parameters, default parameters, parameter groups and named parameters. It checks types and will trigger exceptions if a function is called incorrectly.
@@ -69,7 +69,7 @@ addBook("Frankenstein", 5);
 		</code></pre>
 		<h2>Download</h2>
 		<p>
-		<a class=button href="https://raw2.github.com/autographer/args.js/master/Args.js">Full</a> (5.8k) <a class=button href="https://raw2.github.com/autographer/args.js/master/Args.min.js">Minified</a> (2.4k)
+		<a class=button href="https://raw2.github.com/autographer/args.js/master/Args.js">Full</a> (11.7k) <a class=button href="https://raw2.github.com/autographer/args.js/master/Args.min.js">Minified</a> (4.0k)
 		</p>
 		<p>
 		&nbsp;
@@ -80,8 +80,14 @@ addBook("Frankenstein", 5);
 		<pre><code class="language-clike">
 npm install args-js
 		</code></pre>
+		<p>
+		Or <a href="http://bower.io/">Bower</a>:
+		</p>
+		<pre><code class="language-clike">
+bower install args-js
+		</code></pre>
 		<h2>Source</h2>
-		The code is on <a href="http://github.com/autographer/Args.js">GitHub</a> and is MIT licensed. It works like <code>&lt;script src=...&gt;</code> in a browser or with <a href="http://requirejs.org/">AMD</a> or <a href="http://nodejs.org/api/modules.html">Node.js's <code>require()</code></a>. There are over 35 tests (so far) which can be run using <a href="http://visionmedia.github.io/mocha/">mocha</a>.
+		The code is on <a href="http://github.com/autographer/Args.js">GitHub</a> and is MIT licensed. It works like <code>&lt;script src=...&gt;</code> in a browser or with <a href="http://requirejs.org/">AMD</a> or <a href="http://nodejs.org/api/modules.html">Node.js's <code>require()</code></a>. There are over 50 tests (so far) which can be run using <a href="http://visionmedia.github.io/mocha/">mocha</a>.
 		<h2>Features</h2>
 		<h3>Optional & Required Arguments</h3>
 		Arguments can be specified as optional or required. If a required argument is absent an exception is thrown.
@@ -170,21 +176,62 @@ addBook(new MyAuthor("Mary Shelley"), "Frankenstein", 5, function(book) { /* ...
 addBook("Frankenstein", function(book) { /* ... */ });
 		</code></pre>
 
+		<h3>Custom Checks</h3>
+		You can write custom check functions to guarantee the right arguments get through.
+		<pre><code class="language-javascript">
+var args = Args([
+	{author:   Args.OBJECT   | Args.Required, _check:
+		function(author) { return author.name === "Mary Shelley"; }
+	},
+	{title:    Args.STRING   | Args.Required}
+], arguments);
+		</code></pre>
+
+		<h3>Argument Precedence</h3>
+		Args.js gives first precedence to named arguments, other arguments will be shifted to the right:
+		<pre><code class="language-javascript">
+function addBook() {
+	var args = Args([
+		{author:   Args.STRING   | Args.Required},
+		{title:    Args.STRING   | Args.Required}
+	], arguments);
+}
+
+addBook("Frankenstein", {author: "Mary Shelley"});
+
+// args.author === "Mary Shelley" 
+// args.title === "Frankenstein" 
+		</code></pre>
+		It also prefers <code>Required</code> arguments over <code>Optional</code> ones:
+		<pre><code class="language-javascript">
+function addBook() {
+	var args = Args([
+		{author:   Args.STRING   | Args.Optional},
+		{title:    Args.STRING   | Args.Required}
+	], arguments);
+}
+
+addBook("Frankenstein");
+
+// args.author === undefined 
+// args.title === "Frankenstein" 
+		</code></pre>
 
 
 		<h2>Types</h2>
 		Args.js includes the following type constants for you to use in function signatures:
 		<pre><code class="language-javascript">
-Args.STRING       = 0x1;
-Args.FUNCTION     = 0x1 << 1;
-Args.INT          = 0x1 << 2;
-Args.FLOAT        = 0x1 << 3;
-Args.ARRAY_BUFFER = 0x1 << 4;
-Args.OBJECT       = 0x1 << 5;
-Args.DATE         = 0x1 << 6;
-Args.BOOL         = 0x1 << 7;
-Args.DOM_EL       = 0x1 << 8;
-Args.ARRAY        = 0x1 << 9;
+Args.ANY
+Args.STRING       
+Args.FUNCTION     
+Args.INT          
+Args.FLOAT        
+Args.ARRAY_BUFFER 
+Args.OBJECT       
+Args.DATE         
+Args.BOOL         
+Args.DOM_EL       
+Args.ARRAY        
 		</code></pre>
 
 		<h2>See Also</h2>
