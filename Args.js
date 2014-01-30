@@ -206,6 +206,8 @@ var Args = (function() {
 		if (scheme === undefined) throw new Error("The scheme has not been passed.");
 		if (args === undefined) throw new Error("The arguments have not been passed.");
 
+		args = Array.prototype.slice.call(args,0);
+
 		var returns = {};
 		var err = undefined;
 
