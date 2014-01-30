@@ -24,13 +24,53 @@ module.exports = function(grunt) {
 					]
 				}
 			}
+		},
+		uglify: {
+			options: {
+				sourceMap: true
+			},
+			args_js: {
+				files: {
+					'dist/Args.min.js': ['dist/Args.js']
+				}
+			}
+		},
+		copy: {
+			main: {
+				files: [
+					{src: ['Args.js'], dest: 'dist/'}
+				]
+			}
+		},
+		bumper: {
+			options: {
+				files: ["package.json", "bower.json"],
+				runTasks: true,
+				tasks: ["release"],
+				add: true,
+				addFiles: ["."],
+				commit: false,
+				commitMessage: "Release %VERSION%",
+				commitFiles: ["-a"],
+				createTag: true,
+				tagName: "%VERSION%",
+				tagMessage: "Version %VERSION%",
+				push: false,
+				pushTo: "origin",
+				npm: false,
+				npmTag: "Release %VERSION%",
+			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-mocha-phantomjs');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-bumper');
 
 	grunt.registerTask('dev', ['connect', 'watch']);
 	grunt.registerTask('test', ['connect', 'mocha_phantomjs']);
+	grunt.registerTask('release', ['copy', 'uglify']);
 };

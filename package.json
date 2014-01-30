@@ -2,11 +2,17 @@
   "name": "args-js",
   "version": "0.10.0",
   "description": "Create javascript functions with optional, default and named paramaters.",
-  "keywords": ["function", "args", "arguments", "paramaters", "api"],
+  "keywords": [
+    "function",
+    "args",
+    "arguments",
+    "paramaters",
+    "api"
+  ],
   "homepage": "http://autographer.github.io/args.js/",
   "repository": {
-	  "type": "git",
-	  "url": "https://github.com/autographer/args.js"
+    "type": "git",
+    "url": "https://github.com/autographer/args.js"
   },
   "dependencies": {},
   "devDependencies": {
@@ -17,7 +23,10 @@
     "should": "~1.1.0",
     "phantomjs": "1.9.1-0",
     "mocha-phantomjs": "~3.3.1",
-    "grunt-mocha-phantomjs": "~0.4.0"
+    "grunt-mocha-phantomjs": "~0.4.0",
+    "grunt-bumper": "~1.0.2",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-uglify": "~0.3.2"
   },
   "engines": {
     "node": "0.8.x",
@@ -26,5 +35,5 @@
   "scripts": {
     "test": "mocha"
   },
-  "main":"Args.js"
+  "main": "Args.js"
 }
