@@ -49,15 +49,13 @@ module.exports = function(grunt) {
 				tasks: ["release"],
 				add: true,
 				addFiles: ["."],
-				commit: false,
+				commit: true,
 				commitMessage: "Release %VERSION%",
 				commitFiles: ["-a"],
 				createTag: true,
 				tagName: "%VERSION%",
 				tagMessage: "Version %VERSION%",
-				push: false,
-				pushTo: "origin",
-				npm: false,
+				npm: true,
 				npmTag: "Release %VERSION%",
 			}
 		}
