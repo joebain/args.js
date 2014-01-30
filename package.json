@@ -14,8 +14,7 @@
     "type": "git",
     "url": "https://github.com/autographer/args.js"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-watch": "~0.5.3",
@@ -27,9 +26,7 @@
     "grunt-mocha-phantomjs": "~0.4.0",
     "grunt-bumper": "~1.0.2",
     "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-uglify": "~0.3.2",
-    "coveralls": "~2.7.0",
-    "mocha-lcov-reporter": "0.0.1"
+    "grunt-contrib-uglify": "~0.3.2"
   },
   "engines": {
     "node": "0.8.x",

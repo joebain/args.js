@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 			options: {
 				files: ["package.json", "bower.json"],
 				runTasks: true,
-				tasks: ["copy uglify"],
+				tasks: ["release"],
 				add: true,
 				addFiles: ["."],
 				commit: true,
@@ -71,4 +71,5 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('dev', ['connect', 'watch']);
 	grunt.registerTask('test', ['connect', 'mocha_phantomjs']);
+	grunt.registerTask('release', ['copy', 'uglify']);
 };
