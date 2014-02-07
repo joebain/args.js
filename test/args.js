@@ -358,20 +358,17 @@ describe('Args', function(){
 			assert.equal(args.test1, testPhotoArg);
 		});
 
-		it("should take an object or string miss an optional string and object then take an object with a check", function() {
+		it("should parse a required argument with a check after an optional argument of the same type", function() {
 			var args = new Args([
-				{ test1: Args.OBJECT | Args.STRING | Args.Required },
-				{ test2: Args.STRING | Args.Optional },
-				{ test3: Args.OBJECT | Args.Optional, _default: {} },
-				{ test4: Args.OBJECT | Args.Required, _check:
-					function(o) { return o === testObjectArg; }
-				}
-			], [testStringArg, testObjectArg]);
+				{ test1: Args.STRING | Args.Optional },
+				{ test2: Args.STRING | Args.required, _check:
+					function(o) {
+					return o === testStringArg;
+				} }
+			], [testStringArg]);
 
-			assert.equal(args.test1, testStringArg);
-			assert.equal(args.test2, undefined);
-			assert.equal(args.test3, undefined);
-			assert.equal(args.test4, testObjectArg);
+			assert.equal(args.test1, undefined);
+			assert.equal(args.test2, testStringArg);
 		});
 	});
 
