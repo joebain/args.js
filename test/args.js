@@ -309,6 +309,9 @@ describe('Args', function(){
 
 	describe("Default values", function() {
 		var testStringArg = "testArg";
+		var testStringArg2 = "testArg2";
+		var testStringArg3 = "testArg3";
+		var testStringArg4 = "testArg4";
 		var testIntArg = 62;
 		var testIntArg2 = 63;
 		var testFloatArg = 47.9;
@@ -356,6 +359,30 @@ describe('Args', function(){
 			], [testFotoArg]);
 
 			assert.equal(args.test1, testPhotoArg);
+		});
+
+		it("should use the default agrument for an optional paramater when there is only one arg and a later required arg of the same type", function() {
+			var args = Args([
+				{test1: Args.STRING | Args.Optional, _default: testStringArg2},
+				{test2: Args.STRING | Args.Required}
+			], [testStringArg]);
+
+			assert.equal(args.test1, testStringArg2);
+			assert.equal(args.test2, testStringArg);
+		});
+
+		it("should use the default agruments for optional paramaters when there are many args and a later required arg of the same type", function() {
+			var args = Args([
+				{test1: Args.STRING | Args.Optional, _default: testStringArg},
+				{test2: Args.STRING | Args.Optional, _default: testStringArg2},
+				{test3: Args.STRING | Args.Optional, _default: testStringArg3},
+				{test4: Args.STRING | Args.Required}
+			], [testStringArg4]);
+
+			assert.equal(args.test1, testStringArg);
+			assert.equal(args.test2, testStringArg2);
+			assert.equal(args.test3, testStringArg3);
+			assert.equal(args.test4, testStringArg4);
 		});
 	});
 
