@@ -357,19 +357,6 @@ describe('Args', function(){
 
 			assert.equal(args.test1, testPhotoArg);
 		});
-
-		it("should parse a required argument with a check after an optional argument of the same type", function() {
-			var args = new Args([
-				{ test1: Args.STRING | Args.Optional },
-				{ test2: Args.STRING | Args.required, _check:
-					function(o) {
-					return o === testStringArg;
-				} }
-			], [testStringArg]);
-
-			assert.equal(args.test1, undefined);
-			assert.equal(args.test2, testStringArg);
-		});
 	});
 
 	describe("Complex ordered args", function() {
@@ -484,7 +471,9 @@ describe('Args', function(){
 	});
 
 	describe("Custom check functions", function() {
+		var testStringArg = "testArg";
 		var testIntArg = 42;
+
 		it("should match an int based on a custom value check", function() {
 			var args = Args([
 				 {test1: Args.NotNull, _check: function(v) { return v === 42; } }
@@ -499,6 +488,38 @@ describe('Args', function(){
 					{test1: Args.NotNull, _check: function(v) { return v === 43; } }
 				], [testIntArg]);
 			}).should.throw(/does not pass the custom check/);
+		});
+
+		it("should parse a required argument with a check after an optional argument of the same type", function() {
+			var check = function(o) { return o === testStringArg; }
+			var args = new Args([
+				{ test1: Args.STRING | Args.Optional },
+				{ test2: Args.STRING | Args.Required, _check: check }
+			], [testStringArg]);
+
+			assert.equal(args.test1, undefined);
+			assert.equal(args.test2, testStringArg);
+		});
+
+		it("should call a check for an argument which satisfies a type", function(done) {
+			var check = function(o) { 
+				done();
+				return o === testStringArg;
+			}
+			var args = new Args([
+				{ test2: Args.STRING | Args.Required, _check: check }
+			], [testStringArg]);
+		});
+
+		it("should call a check for an argument after an argument without a check", function(done) {
+			var check = function(o) { 
+				done();
+				return o === testStringArg;
+			}
+			var args = new Args([
+				{ test1: Args.STRING | Args.Optional },
+				{ test2: Args.STRING | Args.Required, _check: check }
+			], [testStringArg]);
 		});
 	});
 
