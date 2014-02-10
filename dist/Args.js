@@ -252,7 +252,7 @@ var Args = (function() {
 			var arg = returns[lastMatch.sname];
 			if (_typeMatches(arg, schemeEl)) {
 				returns[schemeEl.sname] = arg;
-				returns[lastMatch.sname] = undefined;
+				returns[lastMatch.sname] = lastMatch.defValue || undefined;
 				if ((lastMatch.sarg & Args.Optional) === 0) { // if the last in the run was not optional
 					_shiftRun(lastMatch, a, r-1);
 				}
