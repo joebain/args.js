@@ -257,7 +257,7 @@ var Args = (function() {
 					_shiftRun(lastMatch, a, r-1);
 				}
 			} else {
-				return _reasonForFailure(schemeEl, arg, a);
+				return _reasonForFailure(schemeEl, a, arg);
 			}
 		};
 
@@ -350,7 +350,7 @@ var Args = (function() {
 									return a+1;
 								}
 							} else {
-								err = _reasonForFailure(schemeEl, arg, a);
+								err = _reasonForFailure(schemeEl, a, arg);
 							}
 							return a;
 						} else {
