@@ -187,6 +187,15 @@ var args = Args([
 ], arguments);
 		</code></pre>
 
+		<h3>Regex Checks</h3>
+        For arguments which have a sensible <code>toString()</code> representation you can pass a regular expression as a custom checker. This trys to match the regex to the string value of an argument.
+		<pre><code class="language-javascript">
+var args = Args([
+	{author:   Args.OBJECT   | Args.Required, _check: /(Mary|Percy Bysshe) Shelley/ },
+	{title:    Args.STRING   | Args.Required}
+], arguments);
+		</code></pre>
+
 		<h3>Argument Precedence</h3>
 		Args.js gives first precedence to named arguments, other arguments will be shifted to the right:
 		<pre><code class="language-javascript">

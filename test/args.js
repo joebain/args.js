@@ -519,10 +519,18 @@ describe('Args', function(){
 
 		it("should accept a RegExp object as a custom value check", function() {
 			var args = Args([
-				{test1: Args.NotNull | Args.Optional, _check: /[a-z]+Arg/ }
+				{test1: Args.Optional, _check: /[a-z]+Arg/ }
 			], [testStringArg]);
 
 			assert.equal(args.test1, testStringArg);
+		});
+
+		it("should not match an argument which doesn't match the RegExp", function() {
+			var args = Args([
+				{test1: Args.Optional, _check: /[a-z]+foo/ }
+			], [testStringArg]);
+
+			assert.equal(args.test1, undefined);
 		});
 
 		it("should parse a required argument with a check after an optional argument of the same type", function() {
