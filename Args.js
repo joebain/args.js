@@ -44,6 +44,12 @@ var Args = (function() {
 				}
 		}
 		schemeEl.sarg = rawSchemeEl[schemeEl.sname];
+		if(typeof schemeEl.customCheck === "object" && schemeEl.customCheck instanceof RegExp) {
+			var schemeRegexp = schemeEl.customCheck;
+			schemeEl.customCheck = function(arg) {
+				return !!arg.toString().match(schemeRegexp);
+			};
+		}
 		return schemeEl;
 	};
 
