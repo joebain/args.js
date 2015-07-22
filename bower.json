@@ -1,6 +1,6 @@
 {
   "name": "args.js",
-  "version": "0.10.6",
+  "version": "0.10.7",
   "homepage": "http://joebain.github.io/args.js",
   "description": "Create javascript functions with optional, default and named paramaters.",
   "main": "Args.js",

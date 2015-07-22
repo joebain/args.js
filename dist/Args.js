@@ -1,7 +1,7 @@
 /**
 The MIT License (MIT)
 
-Copyright (c) 2013-2014, OMG Life Ltd 
+Copyright (c) 2013-2014, OMG Life Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-var Args = (function() {
-
+;(function(name, context, definition) {
+    if (typeof module !== 'undefined' && module.exports) { module.exports = definition(); }
+    else if (typeof define === 'function' && define.amd) { define(definition); }
+    else { context[name] = definition(); }
+})('Args', this, function argsDefinition() {
 	"use strict";
 
 	var _extractSchemeEl = function(rawSchemeEl) {
@@ -138,10 +141,10 @@ var Args = (function() {
 			}
 		}
 		if ((sarg & Args.ARRAY_BUFFER) !== 0 ) {
-			return "Arry Buffer";	
+			return "Arry Buffer";
 		}
 		if ((sarg & Args.DATE) !== 0 ) {
-			return "Date";	
+			return "Date";
 		}
 		if ((sarg & Args.BOOL) !== 0 ) {
 			return "Bool";
@@ -193,7 +196,7 @@ var Args = (function() {
 	};
 
 	var _reasonForFailure = function(schemeEl, a, arg) {
-		var err = ""
+		var err = "";
 		if (_isTypeSpecified(schemeEl)) {
 			err = "Argument " + a + " ("+schemeEl.sname+") should be type "+_getTypeString(schemeEl)+", but it was type " + (typeof arg) + " with value " + arg + ".";
 		} else if (schemeEl.customCheck !== undefined) {
@@ -277,7 +280,7 @@ var Args = (function() {
 				args.splice(args.length-1,1);
 			}
 		}
-		
+
 
 		for (a = 0, s = 0; s < scheme.length ; s++) {
 			a = (function(a,s) {
@@ -399,10 +402,5 @@ var Args = (function() {
 	Args.NotNull	  =
 	Args.Required	  = 0x1 << 12;
 
-	return Args;
-})();
-
-
-try {
-	module.exports = Args;
-} catch (e) {}
+    return Args;
+});
