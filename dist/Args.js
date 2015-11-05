@@ -1,7 +1,7 @@
 /**
 The MIT License (MIT)
 
-Copyright (c) 2013-2014, OMG Life Ltd
+Copyright (c) 2013-2015, Joe Bain 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -275,7 +275,12 @@ THE SOFTWARE.
 
 
 		// first let's extract any named args
-		if (typeof args[args.length-1] === "object") {
+        // we need to see if the last arg is an object and if it's constructor was Object (i.e. it is simple)
+        var lastArg = args[args.length-1];
+		if (lastArg !== null && typeof lastArg === "object" && lastArg.constructor === Object) {
+            // we should also exit if the object arg matches a rule itself
+            // that is more tricky though...
+
 			if (_checkNamedArgs(args[args.length-1], scheme, returns)) {
 				args.splice(args.length-1,1);
 			}

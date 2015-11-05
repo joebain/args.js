@@ -723,6 +723,27 @@ describe('Args', function(){
 			assert.equal(args2.test5, undefined);
 		});
 
+		it("should accept an option from a group and ignore some optional args", function() {
+            var TestType = function() {};
+            var testArg = new TestType;
+			var testArgs = [testArg];
+			var testDefn = [
+				[
+					 {test1: Args.OBJECT, _type: TestType},
+					 {test2: Args.STRING}
+				],
+				{test3: Args.STRING | Args.Optional},
+				{test4: Args.BOOL | Args.Optional}
+			];
+			var args1 = Args(testDefn, testArgs);
+			
+			assert.equal(args1.test1, testArg);
+			assert.equal(args1.test2, undefined);
+			assert.equal(args1.test3, undefined);
+			assert.equal(args1.test4, undefined);
+
+		});
+
 		it("should accept either of 2 options along with some non grouped args which come first", function() {
 			var testArgs1 = [testIntArg, testFunctionArg, testStringArg];
 			var testArgs2 = [testIntArg, testFunctionArg, testIntArg2];
@@ -779,4 +800,23 @@ describe('Args', function(){
 		});
 
 	});
+
+    describe("Really weird shit", function() {
+		it("it should pick up a type with a property name matching another argument and the other optional arg", function() {
+            var el = document.createElement('div');
+            var TestType = function(){};
+            TestType.prototype.arg2 = "arg2";
+            var testArg = new TestType;
+            var testArgs = [testArg];
+
+            var args = Args([
+                {arg1: Args.OBJECT, _type:TestType},
+                {arg2: Args.STRING | Args.Optional}
+            ], testArgs);
+
+            assert.equal(args.arg1, testArg);
+            assert.equal(args.arg2, undefined);
+		});
+
+    });
 });

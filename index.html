@@ -158,6 +158,22 @@ myFunc({
 	rating: 5
 });
 		</code></pre>
+
+        <b>Note:</b> If the last argument you pass is a simple object which has a property with the same name and type of one of your other arguments Args.js will assume you are trying to use named arguments. So for example, this will cause problems:
+		<pre><code class="language-javascript">
+function myFunc() {
+	var args = Args([
+		{book:        Args.OBJECT | Args.Required},
+		{description: Args.STRING | Args.Optional}
+	], arguments);
+}
+
+var myBook = {title: "Frankenstein", description: "A book about a monster"};
+// THIS WILL THROW AN ERROR!
+myFunc(myBook);
+		</code></pre>
+        To get around this you can make sure your book has a proper type, or it does not share property names with your arguments.
+
 		<h3>Mixed Order Arguments</h3>
 		Your first and third arguments are optional but the second and fourth aren't? No problem.
 		<pre><code class="language-javascript">
