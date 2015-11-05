@@ -803,7 +803,6 @@ describe('Args', function(){
 
     describe("Really weird shit", function() {
 		it("it should pick up a type with a property name matching another argument and the other optional arg", function() {
-            var el = document.createElement('div');
             var TestType = function(){};
             TestType.prototype.arg2 = "arg2";
             var testArg = new TestType;
