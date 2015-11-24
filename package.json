@@ -14,6 +14,7 @@
     "type": "git",
     "url": "https://github.com/joebain/args.js"
   },
+  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.2",
