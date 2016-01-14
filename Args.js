@@ -1,7 +1,7 @@
 /**
 The MIT License (MIT)
 
-Copyright (c) 2013-2015, Joe Bain 
+Copyright (c) 2013-2015, Joe Bain
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -73,7 +73,7 @@ THE SOFTWARE.
 		else if ((schemeEl.sarg & Args.FLOAT) !== 0 && typeof arg === "number") {
 			ok = true;
 		}
-		else if ((schemeEl.sarg & Args.ARRAY) !== 0 && (arg instanceof Array)) {
+		else if ((schemeEl.sarg & Args.ARRAY) !== 0 && (Array.isArray(arg))) {
 			ok = true;
 		}
 		else if (((schemeEl.sarg & Args.OBJECT) !== 0 || schemeEl.typeValue !== undefined) && (
