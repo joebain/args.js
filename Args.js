@@ -29,6 +29,12 @@ THE SOFTWARE.
 })('Args', this, function argsDefinition() {
 	"use strict";
 
+	if (!Array.isArray) {
+		Array.isArray = function(arg) {
+			return Object.prototype.toString.call(arg) === '[object Array]';
+		};
+	}
+
 	var _extractSchemeEl = function(rawSchemeEl) {
 		var schemeEl = {};
 		schemeEl.defValue = undefined;
