@@ -801,6 +801,77 @@ describe('Args', function(){
 
 	});
 
+    describe("Optional argument groups", function() {
+        it("should skip an argument group if it is marked as optional", function() {
+            var args = Args([
+                [
+					 {test1: Args.STRING},
+					 {test2: Args.INT},
+                     Args.Optional
+				]
+            ], []);
+                            
+            assert.equal(args.test1, undefined);
+            assert.equal(args.test2, undefined);
+        });
+        
+        it("should skip an argument group if it is marked as optional and pick up other args", function() {
+            var testString = "test";
+            var testBool = true;
+
+            var args = Args([
+                { test1: Args.STRING },
+                [
+					 {test2: Args.STRING},
+					 {test3: Args.INT},
+                     Args.Optional
+				],
+                { test4: Args.BOOL }
+            ], [testString, testBool]);
+                            
+            assert.equal(args.test1, testString);
+            assert.equal(args.test2, undefined);
+            assert.equal(args.test3, undefined);
+            assert.equal(args.test4, testBool);
+        });
+
+        it("should still pick up an argument group if it is marked as optional", function() {
+            var testString1 = "test1";
+
+            var args = Args([
+                [
+					 {test1: Args.STRING},
+					 {test2: Args.INT},
+                     Args.Optional
+				]
+            ], [testString1]);
+                            
+            assert.equal(args.test1, testString1);
+            assert.equal(args.test2, undefined);
+        });
+
+        it("should pick up an argument group if it is marked as optional and pick up other args", function() {
+            var testString = "test";
+            var testBool = true;
+            var testInt = 7;
+
+            var args = Args([
+                { test1: Args.STRING },
+                [
+					 {test2: Args.STRING},
+					 {test3: Args.INT},
+                     Args.Optional
+				],
+                { test4: Args.BOOL }
+            ], [testString, testInt, testBool]);
+                            
+            assert.equal(args.test1, testString);
+            assert.equal(args.test2, undefined);
+            assert.equal(args.test3, testInt);
+            assert.equal(args.test4, testBool);
+        });
+    });
+
     describe("Really weird shit", function() {
 		it("it should pick up a type with a property name matching another argument and the other optional arg", function() {
             var TestType = function(){};

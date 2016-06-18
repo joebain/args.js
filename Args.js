@@ -300,31 +300,37 @@ THE SOFTWARE.
 
 				// argument group
 				if (scheme[s] instanceof Array) {
-					if (arg === null || arg === undefined) {
-						err = "Argument " + a + " is null or undefined but it must be not null.";
-						return a;
-					} else {
-						var group = scheme[s];
-						var retName = undefined;
-						for (var g = 0 ; g < group.length ; g++) {
-							var schemeEl = _extractSchemeEl(group[g]);
-							if (_typeMatches(arg, schemeEl)) {
-								retName = schemeEl.sname;
-							}
-						}
-						if (retName === undefined) {
-							err = "Argument " + a + " should be one of: ";
-							for (var g = 0 ; g < group.length ; g++) {
-								var schemeEl = _extractSchemeEl(group[g]);
-								err += _getTypeString(schemeEl) + ", ";
-							}
-							err += "but it was type " + (typeof arg) + " with value " + arg + ".";
-							return a;
-						} else {
-							returns[retName] = arg;
-							return a+1;
-						}
-					}
+                    var group = scheme[s];
+                    var retName = undefined;
+                    var groupIsOptional = false;
+                    for (var g = 0 ; g < group.length ; g++) {
+                        var groupEl = group[g];
+                        if (groupEl === Args.Optional) {
+                            groupIsOptional = true;
+                        } else {
+                            var schemeEl = _extractSchemeEl(groupEl);
+                            if (_typeMatches(arg, schemeEl)) {
+                                retName = schemeEl.sname;
+                            }
+                        }
+                    }
+                    if (retName === undefined && !groupIsOptional) {
+                        if (arg === null || arg === undefined) {
+                            err = "Argument " + a + " is null or undefined but it must be not null.";
+                            return a;
+                        }
+
+                        err = "Argument " + a + " should be one of: ";
+                        for (var g = 0 ; g < group.length ; g++) {
+                            var schemeEl = _extractSchemeEl(group[g]);
+                            err += _getTypeString(schemeEl) + ", ";
+                        }
+                        err += "but it was type " + (typeof arg) + " with value " + arg + ".";
+                        return a;
+                    } else if (retName !== undefined) {
+                        returns[retName] = arg;
+                        return a+1;
+                    }
 				} else {
 					var schemeEl = _extractSchemeEl(scheme[s]);
 

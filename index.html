@@ -134,6 +134,10 @@ myFunc("Wuthering Heights", wutherBookObject);
 // or
 myFunc("Wuthering Heights", "A book about love and rain.");
 		</code></pre>
+        It is also possible to make an argument group optional by including an <code>Args.Optional</code> in the group, this means a positional argument will be taken if possible, but the group is skipped otherwise:
+		<pre><code class="language-javascript">
+	[ {description: Args.STRING}, {myBook: Args.OBJECT}, Args.Optional ]
+		</code></pre>
 		<h3>Named Arguments</h3>
 		You can call your functions with named arguments too.
 		<pre><code class="language-javascript">
